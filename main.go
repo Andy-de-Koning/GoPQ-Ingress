@@ -1,8 +1,8 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
-	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -26,20 +26,28 @@ func main() {
 		log.Fatalf("[error] Kon config.yml niet laden: %v", err)
 	}
 
-	pqcConfig := &tls.Config{
-		CurvePreferences: []tls.CurveID{tls.CurveID(0x11ec), tls.X25519, tls.CurveP256},
-		MinVersion:       tls.VersionTLS13,
-	}
-
-	certmagic.Default.TLSConfig = pqcConfig
+	magic := certmagic.NewDefault()
 	if cfg.Email != "" {
 		certmagic.DefaultACME.Email = cfg.Email
 	}
+
+	tlsConfig := magic.TLSConfig()
+	
+	tlsConfig.CurvePreferences = []tls.CurveID{
+		tls.CurveID(0x11ec), 
+		tls.X25519,
+		tls.CurveP256,
+	}
+	tlsConfig.MinVersion = tls.VersionTLS13
 
 	var domains []string
 	for domain := range cfg.Routes {
 		domains = append(domains, domain)
 		log.Printf("👉 Route geladen: %s -> %s", domain, cfg.Routes[domain])
+	}
+
+	if err := magic.ManageSync(context.Background(), domains); err != nil {
+		log.Fatalf("[error] Certificaat beheer fout: %v", err)
 	}
 
 	proxyHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +70,7 @@ func main() {
 		proxy.Director = func(req *http.Request) {
 			originalDirector(req)
 			req.Header.Set("X-Forwarded-Host", r.Host)
-			req.Header.Set("X-PQC-Enabled", "true") 
+			req.Header.Set("X-PQC-Enabled", "true")
 		}
 
 		proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
@@ -73,10 +81,31 @@ func main() {
 		proxy.ServeHTTP(w, r)
 	})
 
-	log.Printf("Server luistert op poort 80 (HTTP) en 443 (HTTPS+PQC)")
+go func() {
+    log.Println("[info] Start HTTP redirect server op :80")
+    // Een simpele functie die alles doorstuurt naar HTTPS
+    err := http.ListenAndServe(":80", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        target := "https://" + r.Host + r.URL.Path
+        if len(r.URL.RawQuery) > 0 {
+            target += "?" + r.URL.RawQuery
+        }
+        http.Redirect(w, r, target, http.StatusMovedPermanently)
+    }))
+
+    if err != nil {
+        log.Fatalf("[error] Kon poort 80 niet openen: %v", err)
+    }
+}()
+
+	log.Printf("[info] Server luistert op poort 443 (HTTPS+PQC)")
 	
-	err = certmagic.HTTPS(domains, proxyHandler)
-	if err != nil {
+	server := &http.Server{
+		Addr:      ":443",
+		Handler:   proxyHandler,
+		TLSConfig: tlsConfig,
+	}
+
+	if err := server.ListenAndServeTLS("", ""); err != nil {
 		log.Fatalf("[error] Server crash: %v", err)
 	}
 }
