@@ -36,7 +36,7 @@ git clone https://github.com/andy-de-koning/GoPQ-Ingress.git
 cd GoPQ-Ingress
 docker build -t gopq-ingress .
 ```
-2. Start de container
+#### 2. Start de container
 Dit commando start de server en zorgt dat je certificaten bewaard blijven.
 
 Bash
