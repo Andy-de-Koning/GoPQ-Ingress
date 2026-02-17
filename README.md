@@ -23,21 +23,46 @@ Met **GoPQ-Ingress** doe jij dat ook. Deze server dwingt de **Hybride Post-Quant
 * 🔌 **WebSockets:** Out-of-the-box ondersteuning voor real-time apps.
 * 🕵️ **Privacy Header:** Voegt `X-PQC-Enabled: true` toe aan requests naar je backend.
 
+
 ## 🛠️ Installatie
 
-### 1. Vereisten
+
+### 🐳 Docker (Aanbevolen)
+Je hoeft niets te installeren als je Docker hebt.
+
+#### 1. Bouw de image
+```bash
+docker build -t gopq-ingress .
+```
+2. Start de container
+Dit commando start de server en zorgt dat je certificaten bewaard blijven.
+
+Bash
+```bash
+docker run -d \
+  --name gopq-ingress \
+  --restart always \
+  -p 80:80 -p 443:443 \
+  -v $(pwd)/config.yml:/app/config.yml \
+  -v pqc_certs:/root/.local/share/certmagic \
+  gopq-ingress
+```
+
+### 🛠️ Handmatige Installatie (Zonder Docker)
+
+#### 1. Vereisten
 * Go 1.23 of hoger (voor de beste PQC support).
 * Een Linux server (bijv. Ubuntu) of gewoon lokaal.
 * Poort 80 en 443 moeten vrij zijn.
 
-### 2. Download & Bouw
+#### 2. Download & Bouw
 ```bash
 git clone https://github.com/andy-de-koning/GoPQ-Ingress.git
 cd GoPQ-Ingress
 go mod tidy
 go build -o gopq-ingress main.go
 ```
-3. Configuratie
+#### 3. Configuratie
 Maak een bestand genaamd config.yml naast de executable:
 
 YAML
@@ -50,7 +75,7 @@ routes:
   "app.mijndomein.nl": "[http://192.168.1.50:3000](http://192.168.1.50:3000)"
   "socket.mijndomein.nl": "[http://127.0.0.1:9000](http://127.0.0.1:9000)" # Werkt ook met WS!
 ```
-4. Starten
+#### 4. Starten
 Omdat de server op poort 80 en 443 draait, heb je root-rechten nodig (of setcap):
 
 Bash
