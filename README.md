@@ -57,7 +57,8 @@ Bash
 ```bash
 sudo ./gopq-ingress
 ```
-🧠 Hoe werkt het technisch?
+## 🧠 Hoe werkt het technisch?
+
 Dit project maakt gebruik van de crypto/tls bibliotheek van Go en overschrijft de standaard CurvePreferences. We geven prioriteit aan de Hybride Kyber methode.
 
 Go
@@ -70,7 +71,8 @@ tlsConfig.CurvePreferences = []tls.CurveID{
 ```
 Dit zorgt ervoor dat als een moderne browser (zoals Chrome of Edge) verbinding maakt, er een kwantum-veilige sleuteluitwisseling plaatsvindt. Oudere clients vallen netjes terug op standaard X25519.
 
-🤝 Meedoen
+## 🤝 Meedoen
+
 Heb je ideeën om dit nog vetter te maken? Docker support? Metrics?
 Fork de repo en stuur een Pull Request! Laten we samen het internet veiliger maken.
 
