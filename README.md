@@ -36,10 +36,22 @@ git clone https://github.com/andy-de-koning/GoPQ-Ingress.git
 cd GoPQ-Ingress
 docker build -t gopq-ingress .
 ```
-#### 2. Start de container
+
+#### 2. maak de config file
+Maak een bestand genaamd config.yml:
+```yml
+# config.yml
+email: "jouw-email@voorbeeld.nl" # Voor Let's Encrypt meldingen
+
+routes:
+  "mijndomein.nl": "http://127.0.0.1:8080"
+  "app.mijndomein.nl": "http://192.168.1.50:3000"
+  "socket.mijndomein.nl": "http://127.0.0.1:9000" # Werkt ook met WS!
+```
+
+#### 3. Start de container
 Dit commando start de server en zorgt dat je certificaten bewaard blijven.
 
-Bash
 ```bash
 docker run -d \
   --name gopq-ingress \
@@ -66,21 +78,17 @@ go build -o gopq-ingress main.go
 ```
 #### 3. Configuratie
 Maak een bestand genaamd config.yml naast de executable:
-
-YAML
 ```yml
 # config.yml
 email: "jouw-email@voorbeeld.nl" # Voor Let's Encrypt meldingen
 
 routes:
-  "mijndomein.nl": "[http://127.0.0.1:8080](http://127.0.0.1:8080)"
-  "app.mijndomein.nl": "[http://192.168.1.50:3000](http://192.168.1.50:3000)"
-  "socket.mijndomein.nl": "[http://127.0.0.1:9000](http://127.0.0.1:9000)" # Werkt ook met WS!
+  "mijndomein.nl": "http://127.0.0.1:8080"
+  "app.mijndomein.nl": "http://192.168.1.50:3000"
+  "socket.mijndomein.nl": "http://127.0.0.1:9000" # Werkt ook met WS!
 ```
 #### 4. Starten
 Omdat de server op poort 80 en 443 draait, heb je root-rechten nodig (of setcap):
-
-Bash
 ```bash
 sudo ./gopq-ingress
 ```
