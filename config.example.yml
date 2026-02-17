@@ -1,0 +1,9 @@
+# config.yml
+# Koppel domeinen aan interne IP:Poort combinaties
+routes:
+  "test.jouwdomein.nl": "http://127.0.0.1:8080"
+  "ws.jouwdomein.nl": "http://127.0.0.1:9000" # Werkt ook voor WebSockets!
+  "demo.jouwdomein.nl": "http://192.168.1.50:3000"
+
+# Instellingen voor certificaten (optioneel)
+email: "jouw-email@voorbeeld.nl"

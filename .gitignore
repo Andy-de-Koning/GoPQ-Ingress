@@ -1,0 +1,7 @@
+main
+gopq-ingress
+config.yml
+certs/
+*.pem
+*.crt
+*.key
