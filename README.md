@@ -73,3 +73,5 @@ Dit zorgt ervoor dat als een moderne browser (zoals Chrome of Edge) verbinding m
 🤝 Meedoen
 Heb je ideeën om dit nog vetter te maken? Docker support? Metrics?
 Fork de repo en stuur een Pull Request! Laten we samen het internet veiliger maken.
+
+Gemaakt met ❤️ en ☕ door Andy.
