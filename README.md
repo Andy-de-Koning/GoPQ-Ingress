@@ -32,6 +32,8 @@ Je hoeft niets te installeren als je Docker hebt.
 
 #### 1. Bouw de image
 ```bash
+git clone https://github.com/andy-de-koning/GoPQ-Ingress.git
+cd GoPQ-Ingress
 docker build -t gopq-ingress .
 ```
 2. Start de container
