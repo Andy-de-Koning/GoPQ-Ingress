@@ -1,58 +1,59 @@
 # 🛡️ GoPQ-Ingress
-**Post-Quantum Cryptography (PQC) TLS Gateway voor Hobbyisten & Developers**
+**Post-Quantum Cryptography (PQC) TLS Gateway for Hobbyists & Developers**
 
-> "Beveiliging van de toekomst, vandaag al draaiend op jouw server."
+>"Security of the future, running on your server today."
 
-GoPQ-Ingress is een lichtgewicht, krachtige reverse proxy geschreven in Go. Het doel? Aantonen dat **Post-Quantum Cryptografie** niet alleen voor tech-reuzen is, maar ook voor de hobbyist die zijn home-lab wil beveiligen tegen "Harvest Now, Decrypt Later" aanvallen.
+GoPQ-Ingress is a lightweight, powerful reverse proxy written in Go. The goal? To demonstrate that **Post-Quantum Cryptography** isn't just for tech giants, but also for the hobbyist looking to secure their home lab against "Harvest Now, Decrypt Later" attacks.
 
-[Bewijs van PQC Verbinding]
+[Proof of PQC Connection]
 
 <img width="350" height="474" alt="image" src="https://github.com/user-attachments/assets/d4f14f1b-5e21-45c9-8a5d-5bf2c48115cf" />
 
-*Bovenstaande screenshot toont een actieve X25519MLKEM768 handshake via deze ingress.*
+The screenshot above shows an active X25519MLKEM768 handshake via this ingress.
 
-## 🚀 Waarom dit project?
-Kwantumcomputers zullen in de toekomst in staat zijn om de huidige encryptie (zoals RSA en klassieke Elliptic Curves) te kraken. Grote partijen zoals Google en Cloudflare zijn al aan het testen met nieuwe standaarden.
+## 🚀 Why this project?
+In the future, quantum computers will be capable of cracking current encryption methods (such as RSA and classical Elliptic Curves). Major players like Google and Cloudflare are already testing new standards.
 
-Met **GoPQ-Ingress** doe jij dat ook. Deze server dwingt de **Hybride Post-Quantum Handshake (X25519 + Kyber/ML-KEM)** af. Hierdoor is je dataverkeer nu al beschermd tegen de computers van over 10 jaar.
+With **GoPQ-Ingress**, you can too. This server enforces the **Hybrid Post-Quantum Handshake (X25519 + Kyber/ML-KEM)**. This means your data traffic is already protected against the computers of 10 years from now.
 
 ## ✨ Features
-* 🔒 **Quantum-Safe:** Gebruikt standaard `CurveID(0x11ec)` (X25519MLKEM768).
-* 📜 **Auto-SSL:** Automatische certificaten via Let's Encrypt (dankzij CertMagic).
-* ⚡ **Lichtgewicht:** Geen zware database nodig, enkel een simpele `config.yml`.
-* 🔌 **WebSockets:** Out-of-the-box ondersteuning voor real-time apps.
-* 🕵️ **Privacy Header:** Voegt `X-PQC-Enabled: true` toe aan requests naar je backend.
+* 🔒 Quantum-Safe: Uses standard CurveID(0x11ec) (X25519MLKEM768).
 
+* 📜 Auto-SSL: Automatic certificates via Let's Encrypt (powered by CertMagic).
 
-## 🛠️ Installatie
+* ⚡ Lightweight: No heavy database required, just a simple config.yml.
 
+* 🔌 WebSockets: Out-of-the-box support for real-time apps.
 
-### 🐳 Docker (Aanbevolen)
-Je hoeft niets te installeren als je Docker hebt.
+* 🕵️ Privacy Header: Adds X-PQC-Enabled: true to requests sent to your backend.
 
-#### 1. Bouw de image
-```bash
+## 🛠️ Installation
+
+### 🐳 Docker (Recommended)
+No installation required if you have Docker.
+
+#### 1. Build the image
+```Bash
 git clone https://github.com/andy-de-koning/GoPQ-Ingress.git
 cd GoPQ-Ingress
 docker build -t gopq-ingress .
 ```
+#### 2. Create the config file
+Create a file named config.yml:
 
-#### 2. maak de config file
-Maak een bestand genaamd config.yml:
-```yml
+```YAML
 # config.yml
-email: "jouw-email@voorbeeld.nl" # Voor Let's Encrypt meldingen
+email: "your-email@example.com" # For Let's Encrypt notifications
 
 routes:
-  "mijndomein.nl": "http://127.0.0.1:8080"
-  "app.mijndomein.nl": "http://192.168.1.50:3000"
-  "socket.mijndomein.nl": "http://127.0.0.1:9000" # Werkt ook met WS!
+  "mydomain.com": "http://127.0.0.1:8080"
+  "app.mydomain.com": "http://192.168.1.50:3000"
+  "socket.mydomain.com": "http://127.0.0.1:9000" # Works with WS too!
 ```
+#### 3. Start the container
+This command starts the server and ensures your certificates are persisted.
 
-#### 3. Start de container
-Dit commando start de server en zorgt dat je certificaten bewaard blijven.
-
-```bash
+```Bash
 docker run -d \
   --name gopq-ingress \
   --restart always \
@@ -62,53 +63,54 @@ docker run -d \
   gopq-ingress
 ```
 
-### 🛠️ Handmatige Installatie (Zonder Docker)
+### 🛠️ Manual Installation (Without Docker)
 
-#### 1. Vereisten
-* Go 1.23 of hoger (voor de beste PQC support).
-* Een Linux server (bijv. Ubuntu) of gewoon lokaal.
-* Poort 80 en 443 moeten vrij zijn.
 
-#### 2. Download & Bouw
-```bash
+#### 1. Prerequisites
+* Go 1.23 or higher (for optimal PQC support).
+* A Linux server (e.g., Ubuntu) or local environment.
+* Ports 80 and 443 must be available.
+
+#### 2. Download & Build
+```Bash
 git clone https://github.com/andy-de-koning/GoPQ-Ingress.git
 cd GoPQ-Ingress
 go mod tidy
 go build -o gopq-ingress main.go
 ```
-#### 3. Configuratie
-Maak een bestand genaamd config.yml naast de executable:
-```yml
+#### 3. Configuration
+Create a config.yml file next to the executable:
+
+```YAML
 # config.yml
-email: "jouw-email@voorbeeld.nl" # Voor Let's Encrypt meldingen
+email: "your-email@example.com" # For Let's Encrypt notifications
 
 routes:
-  "mijndomein.nl": "http://127.0.0.1:8080"
-  "app.mijndomein.nl": "http://192.168.1.50:3000"
-  "socket.mijndomein.nl": "http://127.0.0.1:9000" # Werkt ook met WS!
+  "mydomain.com": "http://127.0.0.1:8080"
+  "app.mydomain.com": "http://192.168.1.50:3000"
+  "socket.mydomain.com": "http://127.0.0.1:9000" # Works with WS too!
 ```
-#### 4. Starten
-Omdat de server op poort 80 en 443 draait, heb je root-rechten nodig (of setcap):
-```bash
+#### 4. Run
+Since the server runs on ports 80 and 443, you will need root privileges (or use setcap):
+
+```Bash
 sudo ./gopq-ingress
 ```
-## 🧠 Hoe werkt het technisch?
 
-Dit project maakt gebruik van de crypto/tls bibliotheek van Go en overschrijft de standaard CurvePreferences. We geven prioriteit aan de Hybride Kyber methode.
+## 🧠 Technical Deep Dive
+This project utilizes Go's crypto/tls library and overrides the default CurvePreferences. We prioritize the Hybrid Kyber method.
 
-Go
-```go
+```Go
 tlsConfig.CurvePreferences = []tls.CurveID{
     tls.CurveID(0x11ec), // X25519MLKEM768
     tls.X25519,
     tls.CurveP256,
 }
 ```
-Dit zorgt ervoor dat als een moderne browser (zoals Chrome of Edge) verbinding maakt, er een kwantum-veilige sleuteluitwisseling plaatsvindt. Oudere clients vallen netjes terug op standaard X25519.
+This ensures that when a modern browser (such as Chrome or Edge) connects, a quantum-safe key exchange takes place. Older clients will gracefully fall back to standard X25519.
 
-## 🤝 Meedoen
+## 🤝 Contributing
+Have ideas to make this even better? Docker support? Metrics?
+Fork the repo and submit a Pull Request! Let's make the internet safer together.
 
-Heb je ideeën om dit nog vetter te maken? Docker support? Metrics?
-Fork de repo en stuur een Pull Request! Laten we samen het internet veiliger maken.
-
-Gemaakt met ❤️ en ☕ door Andy.
+Made with ❤️ and ☕ by Andy.
